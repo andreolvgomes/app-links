@@ -18,7 +18,15 @@ router.post('/add', async (req, res) => {
     };
     await pool.query('insert into links set ?', [newLInk]);
 
-    res.send('received');
+    // go to router links
+    res.redirect('/links');
+});
+
+// list all links
+//
+router.get('/', async (req, res) => {
+    const links = await pool.query('select * from links');
+    res.render('links/list', { links: links });
 });
 
 module.exports = router;
