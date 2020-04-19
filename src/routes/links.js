@@ -9,12 +9,13 @@ router.get('/add', isLoggedIn, (req, res) => {
 
 // add new link
 //
-router.post('/add', isLoggedIn, async (req, res) => {
+router.post('/add', isLoggedIn, async(req, res) => {
     const { title, url, description } = req.body;
     const newLInk = {
         title,
         url,
-        description
+        description,
+        user_id: req.user.id
     };
     await pool.query('insert into links set ?', [newLInk]);
 
@@ -27,14 +28,14 @@ router.post('/add', isLoggedIn, async (req, res) => {
 
 // list all links
 //
-router.get('/', isLoggedIn, async (req, res) => {
-    const links = await pool.query('select * from links');
+router.get('/', isLoggedIn, async(req, res) => {
+    const links = await pool.query('select * from links where user_id = ?', [req.user.id]);
     res.render('links/list', { links: links });
 });
 
 // delete link
 //
-router.get('/delete/:id', isLoggedIn, async (req, res) => {
+router.get('/delete/:id', isLoggedIn, async(req, res) => {
     const { id } = req.params;
     await pool.query('delete from links where id = ?', [id]);
 
@@ -47,7 +48,7 @@ router.get('/delete/:id', isLoggedIn, async (req, res) => {
 
 // get one link to edit
 //
-router.get('/edit/:id', isLoggedIn, async (req, res) => {
+router.get('/edit/:id', isLoggedIn, async(req, res) => {
     const { id } = req.params;
     const links = await pool.query('select * from links where id = ?', [id]);
 
@@ -57,7 +58,7 @@ router.get('/edit/:id', isLoggedIn, async (req, res) => {
 
 // update link
 //
-router.post('/edit/:id', isLoggedIn, async (req, res) => {
+router.post('/edit/:id', isLoggedIn, async(req, res) => {
     const { id } = req.params;
     const { title, url, description } = req.body;
     const newLInk = {
