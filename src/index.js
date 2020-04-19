@@ -3,6 +3,10 @@ const morgan = require('morgan');
 const exphbs = require('express-handlebars');
 const path = require('path');
 const bodyParser = require('body-parser');
+const flash = require('connect-flash');
+const session = require('express-session');
+const MySqlStore = require('express-mysql-session');
+const { database } = require('./keys');
 
 // initializations
 const app = express();
@@ -20,13 +24,21 @@ app.engine('.hbs', exphbs({
 app.set('view engine', '.hbs');
 
 // middlewares
+app.use(session({
+  secret: 'faztmysqlnodesession',
+  resave: false,
+  saveUninitialized: false,
+  store: MySqlStore(database)
+}));
+app.use(flash());
 app.use(morgan('dev'));
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // global variables
 app.use((req, res, next) => {
-    next();
+  app.locals.success = req.flash('success');
+  next();
 });
 
 // routers
@@ -41,5 +53,5 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // starting the server
 app.listen(app.get('port'), () => {
-    console.log('Server on port', app.get('port'));
+  console.log('Server on port', app.get('port'));
 });
