@@ -3,6 +3,6 @@ module.exports = {
         host: 'localhost',
         user: 'adm',
         password: '123456',
-        database: 'databae_links'
+        database: 'database_links'
     }
 };
