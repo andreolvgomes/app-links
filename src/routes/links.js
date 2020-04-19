@@ -39,4 +39,30 @@ router.get('/delete/:id', async (req, res) => {
     res.redirect('/links');
 });
 
+// get one link to edit
+//
+router.get('/edit/:id', async (req, res) => {
+    const { id } = req.params;
+    const links = await pool.query('select * from links where id = ?', [id]);
+
+    // go to router links
+    res.render('links/edit', { link: links[0] });
+});
+
+// update link
+//
+router.post('/edit/:id', async (req, res) => {
+    const { id } = req.params;
+    const { title, url, description } = req.body;
+    const newLInk = {
+        title,
+        url,
+        description
+    };
+    await pool.query('update links set ? where id = ?', [newLInk, id]);
+
+    // go to router links
+    res.redirect('/links');
+});
+
 module.exports = router;
